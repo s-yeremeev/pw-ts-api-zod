@@ -1,7 +1,7 @@
 import { ApiClient } from '../api-client'
 import { IApiResponse } from '../api-response'
 import { EHttpMethod } from '../enum/http-method'
-import { ActivitiesResponse, ActivitiesResponseSchema, CreateActivityResponse, CreateActivityResponseSchema } from '../model/activities.model'
+import { ActivitiesResponse, ActivitiesResponseSchema, Activity, ActivitySchema } from '../model/activities.model'
 import { RequestOptionsBuilder } from '../request-options'
 import { CreateActivityRequest } from './activities.utils'
 
@@ -14,11 +14,11 @@ export class ActivitiesApi extends ApiClient {
   }
 
   /** POST /api/v1/Activities — create a new activity. */
-  async createActivity(requestBody: CreateActivityRequest, status?: number): Promise<IApiResponse<CreateActivityResponse>> {
-    return this.send<CreateActivityResponse>(
+  async createActivity(requestBody: CreateActivityRequest, status?: number): Promise<IApiResponse<Activity>> {
+    return this.send<Activity>(
       new RequestOptionsBuilder(EHttpMethod.POST, '/api/v1/Activities')
         .request(requestBody)
-        .responseType(CreateActivityResponseSchema)
+        .responseType(ActivitySchema)
         .expectedStatusCode(status ?? 200)
         .build(),
     )

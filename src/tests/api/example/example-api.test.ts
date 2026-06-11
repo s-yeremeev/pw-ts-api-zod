@@ -25,7 +25,7 @@ test.describe('api: auth', () => {
     assertResponseBody(response.body, 'get-activities.json', ['dueDate'])
   })
 
-  test('t_03_create_activity_returns_200', async ({ activitiesApi }) => {
+  test('t_03_create_activity', async ({ activitiesApi }) => {
     const response = await activitiesApi.createActivity(createActivityRequest)
     expect(response.body?.id).toBe(createActivityRequest.id)
     expect(response.body?.title).toBe(createActivityRequest.title)
