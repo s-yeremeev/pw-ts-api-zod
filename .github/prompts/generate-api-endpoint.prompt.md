@@ -87,13 +87,15 @@ export const createPersonRequest = new CreatePersonRequest({ firstName: 'John', 
 
 Class extends `ApiClient`. Use `RequestOptionsBuilder`:
 
+Methods that mutate data accept an optional `status` parameter (default via `??`) — the status code is asserted inside `ApiClient.send()`, so tests do not need `expect(response.status)`.
+
 ```ts
-async createPerson(requestBody: CreatePersonRequest): Promise<IApiResponse<CreatePersonResponse>> {
+async createPerson(requestBody: CreatePersonRequest, status?: number): Promise<IApiResponse<CreatePersonResponse>> {
   return this.send<CreatePersonResponse>(
     new RequestOptionsBuilder(EHttpMethod.POST, '/api/v2/persons')
       .request(requestBody)
       .responseType(CreatePersonResponseSchema)
-      .expectedStatusCode(201)
+      .expectedStatusCode(status ?? 201)
       .build(),
   )
 }
@@ -142,7 +144,6 @@ import { createPersonRequest } from './persons.data'
 test.describe('api: persons', () => {
   test('t_01_create_person_returns_201', async ({ personApi }) => {
     const response = await personApi.createPerson(createPersonRequest)
-    expect(response.status).toBe(201)
     expect(response.body?.data.id).toBeTruthy()
   })
 })

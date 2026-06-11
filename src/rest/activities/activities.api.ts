@@ -14,12 +14,12 @@ export class ActivitiesApi extends ApiClient {
   }
 
   /** POST /api/v1/Activities — create a new activity. */
-  async createActivity(requestBody: CreateActivityRequest): Promise<IApiResponse<CreateActivityResponse>> {
+  async createActivity(requestBody: CreateActivityRequest, status?: number): Promise<IApiResponse<CreateActivityResponse>> {
     return this.send<CreateActivityResponse>(
       new RequestOptionsBuilder(EHttpMethod.POST, '/api/v1/Activities')
         .request(requestBody)
         .responseType(CreateActivityResponseSchema)
-        .expectedStatusCode(200)
+        .expectedStatusCode(status ?? 200)
         .build(),
     )
   }

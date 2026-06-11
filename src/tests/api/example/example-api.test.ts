@@ -27,7 +27,6 @@ test.describe('api: auth', () => {
 
   test('t_03_create_activity_returns_200', async ({ activitiesApi }) => {
     const response = await activitiesApi.createActivity(createActivityRequest)
-    expect(response.status).toBe(200)
     expect(response.body?.id).toBe(createActivityRequest.id)
     expect(response.body?.title).toBe(createActivityRequest.title)
     expect(response.body?.completed).toBe(createActivityRequest.completed)
