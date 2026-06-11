@@ -1,0 +1,10 @@
+.git/
+.vscode/
+.claude/
+Dockerfile*
+Jenkinsfile*
+docker-compose.yml
+node_modules/
+reports/
+test-results/
+playwright-report/

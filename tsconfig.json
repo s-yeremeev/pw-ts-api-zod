@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "commonjs",
+    "strict": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "types": ["@playwright/test", "node"],
+    "lib": ["ES2024", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["./src/pages/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@rest/*": ["./src/rest/*"],
+      "@utils/*": ["./src/utils/*"]
+    }
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist", "reports", "test-results"]
+}

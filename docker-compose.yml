@@ -1,0 +1,10 @@
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/playwright-tests/src
+      - ./reports:/playwright-tests/reports
+      - ./test-results:/playwright-tests/test-results
+    entrypoint: ['npx', 'playwright', 'test']

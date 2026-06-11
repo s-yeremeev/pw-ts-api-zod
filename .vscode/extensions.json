@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-playwright.playwright",
+    "editorconfig.editorconfig",
+    "ms-azuretools.vscode-docker",
+    "gruntfuggly.todo-tree",
+    "streetsidesoftware.code-spell-checker",
+    "yoavbls.pretty-ts-errors",
+    "pflannery.vscode-versionlens"
+  ]
+}

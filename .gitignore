@@ -1,0 +1,15 @@
+node_modules/
+playwright-report
+reports
+test-results
+dist
+tmp/*
+!tmp/.gitkeep
+.auth/*
+.playwright-mcp
+settings.local.json
+# dotenv
+.env*
+!.env.example
+external-credentials.env
+email-passwords.env

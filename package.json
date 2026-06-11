@@ -1,0 +1,47 @@
+{
+  "name": "new-pw-ts-project",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "End-to-end tests for <SYSTEM_NAME>",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:e2e": "npx playwright test --project=e2e",
+    "test:api": "npx playwright test --project=api",
+    "test:sequential": "npx playwright test --project=sequential",
+    "test:healthcheck": "npx playwright test --project=healthcheck",
+    "report": "npx playwright show-report reports/html-report",
+    "format": "prettier --write \"src/**/*.{ts,js}\"",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9",
+    "@eslint/markdown": "^7",
+    "@playwright/test": "^1.58",
+    "@types/node": "^25",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
+    "eslint": "^9",
+    "eslint-config-prettier": "^10",
+    "eslint-plugin-playwright": "^2",
+    "eslint-plugin-prettier": "^5",
+    "eslint-plugin-sonarjs": "^3",
+    "eslint-plugin-unicorn": "^62",
+    "prettier": "^3",
+    "typescript": "^5.9"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^10",
+    "dotenv": "^17",
+    "luxon": "^3",
+    "zod": "^4"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob@<8": ">=11.0.0",
+      "rimraf@<3": ">=6.0.0"
+    }
+  }
+}

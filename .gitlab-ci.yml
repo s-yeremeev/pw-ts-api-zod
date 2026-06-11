@@ -1,0 +1,40 @@
+stages:
+  - lint
+  - typescript_errors_check
+
+image: node:20-alpine
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pnpm-store/
+    - node_modules/
+
+.merge-request-rules:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+
+.install:
+  before_script:
+    - npm install -g pnpm
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install
+
+eslint:
+  stage: lint
+  extends:
+    - .install
+    - .merge-request-rules
+  script:
+    - pnpm lint
+  allow_failure: false
+
+typescript_errors_check:
+  stage: typescript_errors_check
+  extends:
+    - .install
+    - .merge-request-rules
+  script:
+    - npx tsc --noEmit
+  allow_failure: false
