@@ -4,9 +4,6 @@ import path from 'node:path'
 
 dotenv.config()
 // Optional secret files — uncomment when integrations are used:
-// dotenv.config({ path: './external-credentials.env' })
-// dotenv.config({ path: './email-passwords.env' })
-
 const reports = path.join(process.cwd(), 'reports')
 
 export default defineConfig({
