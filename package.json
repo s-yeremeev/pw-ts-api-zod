@@ -8,7 +8,6 @@
     "test:e2e": "npx playwright test --project=e2e",
     "test:api": "npx playwright test --project=api",
     "test:sequential": "npx playwright test --project=sequential",
-    "test:healthcheck": "npx playwright test --project=healthcheck",
     "report": "npx playwright show-report reports/html-report",
     "format": "prettier --write \"src/**/*.{ts,js}\"",
     "lint": "eslint . --ext .ts",

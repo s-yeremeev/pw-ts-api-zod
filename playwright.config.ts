@@ -52,7 +52,5 @@ export default defineConfig({
       dependencies: ['setup'],
     },
     { name: 'api', testDir: 'src/tests/api', use: { trace: 'off', baseURL: process.env['API_BASE_URL'] ?? process.env['BASE_URL'] } },
-    { name: 'healthcheck', grep: /@healthcheck/ },
-    { name: 'externalservers', testDir: 'src/tests/externalservers', use: { headless: true } },
   ],
 })

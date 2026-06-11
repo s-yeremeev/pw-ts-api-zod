@@ -42,8 +42,7 @@ pipeline {
             steps {
                 script {
                     def project = 'e2e'
-                    if (env.JOB_NAME?.contains('Prod'))            { project = 'externalservers' }
-                    else if (env.JOB_NAME?.contains('Api'))        { project = 'api' }
+                    if (env.JOB_NAME?.contains('Api'))             { project = 'api' }
                     else if (env.JOB_NAME?.contains('Sequential')) { project = 'sequential' }
                     // `|| true` so the report is still collected on test failures.
                     sh "npx playwright test --project=${project} || true"

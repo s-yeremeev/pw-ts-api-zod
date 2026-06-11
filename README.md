@@ -37,7 +37,6 @@ pnpm test                      # all projects
 pnpm run test:e2e              # browser E2E (depends on setup)
 pnpm run test:api              # API tests
 pnpm run test:sequential       # @sequential tests, 1 worker
-pnpm run test:healthcheck      # @healthcheck tagged checks
 pnpm run report                # open HTML report
 ```
 
@@ -51,14 +50,12 @@ pnpm run format
 
 ## Playwright projects
 
-| Project           | What it runs                                                 |
-| ----------------- | ------------------------------------------------------------ |
-| `setup`           | `auth-storage-state.setup.ts` — logs in, saves storage state |
-| `e2e`             | browser tests (excludes `@sequential`), depends on `setup`   |
-| `sequential`      | `@sequential` tests, single worker                           |
-| `api`             | REST tests (trace off)                                       |
-| `healthcheck`     | `@healthcheck` tagged tests                                  |
-| `externalservers` | prod / external health checks                                |
+| Project      | What it runs                                                 |
+| ------------ | ------------------------------------------------------------ |
+| `setup`      | `auth-storage-state.setup.ts` — logs in, saves storage state |
+| `e2e`        | browser tests (excludes `@sequential`), depends on `setup`   |
+| `sequential` | `@sequential` tests, single worker                           |
+| `api`        | REST tests (trace off)                                       |
 
 ## Structure
 
@@ -69,7 +66,6 @@ src/
 │   ├── base-test.ts  # merged UI + API fixtures
 │   ├── e2e/          # ui-fixtures.ts + setup + browser specs (*.test.ts / *.data.ts)
 │   ├── api/          # api-fixtures.ts + REST specs
-│   └── externalservers/  # prod health checks
 ├── rest/             # ApiClient + Zod models
 └── utils/            # common helpers
 ```
@@ -90,7 +86,7 @@ src/
 - **Locators** go through page-object helpers (`byRole`/`byLabel`/`byTestId`), never raw `page.locator()` in specs.
 - **No `waitForTimeout`** — use domain readiness helpers (`waitForPageReady`, extend per app).
 - **Test data** lives in `*.data.ts` next to the spec, not inline.
-- **Test naming**: `t_NN_snake_case`. Tags: `@healthcheck`, `@sequential`.
+- **Test naming**: `t_NN_snake_case`. Tags: `@sequential`.
 - Secrets go in `.env` / `external-credentials.env` / `email-passwords.env` — all gitignored.
 
 ## Docker

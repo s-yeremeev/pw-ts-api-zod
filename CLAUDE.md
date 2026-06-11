@@ -109,7 +109,6 @@ src/rest/
 ### Known intentional trade-offs
 
 - `UniversalPage` combines navigation + locators + readiness check — an acceptable trade-off for a minimal POM base class. Extract into mixins as the project grows.
-- `healthcheck.test.ts` (`externalservers`) only needs the bare `test` without UI/API fixtures — documented here as a deliberate exception.
 
 ## Hard rules
 
@@ -117,7 +116,7 @@ src/rest/
 - **Never `waitForTimeout`** — use domain readiness helpers (`waitForPageReady`; extend per app).
 - **Credentials are test data** — keep them in `*.data.ts` / `.env`, never inline in specs.
 - Don't edit shared files (`base-test.ts`, `ui-fixtures.ts`, `universal-page.ts`) without good reason — they affect every test.
-- **Test naming:** `t_NN_snake_case`. Tags: `@healthcheck`, `@sequential`.
+- **Test naming:** `t_NN_snake_case`. Tags: `@sequential`.
 
 ## CI — Jenkins + Docker
 
