@@ -1,12 +1,12 @@
 import { test as base } from '@playwright/test'
 import { ApiClient } from '@rest/api-client'
+import { ActivitiesApi } from '@rest/activities/activities.api'
 import { AuthApi } from '@rest/auth/auth.api'
-import { CompaniesApi } from '@rest/companies/companies.api'
 
 export interface ApiFixtures {
   apiClient: ApiClient
   authApi: AuthApi
-  companiesApi: CompaniesApi
+  activitiesApi: ActivitiesApi
 }
 
 const apiBaseUrl = process.env['API_BASE_URL'] ?? ''
@@ -19,7 +19,7 @@ export const apiTest = base.extend<ApiFixtures>({
   authApi: async ({ request }, use) => {
     await use(new AuthApi(request, apiBaseUrl))
   },
-  companiesApi: async ({ request }, use) => {
-    await use(new CompaniesApi(request, apiBaseUrl))
+  activitiesApi: async ({ request }, use) => {
+    await use(new ActivitiesApi(request, apiBaseUrl))
   },
 })

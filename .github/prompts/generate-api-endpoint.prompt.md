@@ -61,16 +61,26 @@ If response is `none` — skip the response schema.
 
 ### 2. Request body class — `src/rest/<domain>/<domain>.utils.ts`
 
-One class per request body. Required fields first, optional last:
+One class per request body. Use a single named-params object in the constructor — all fields optional, assigned to public properties:
 
 ```ts
 export class CreatePersonRequest {
-  constructor(
-    public readonly firstName: string,
-    public readonly lastName: string,
-    public readonly companyId?: number,
-  ) {}
+  firstName?: string
+  lastName?: string
+  companyId?: number
+
+  constructor({ firstName, lastName, companyId }: { firstName?: string; lastName?: string; companyId?: number } = {}) {
+    this.firstName = firstName
+    this.lastName = lastName
+    this.companyId = companyId
+  }
 }
+```
+
+Instantiated in `*.data.ts` with named keys:
+
+```ts
+export const createPersonRequest = new CreatePersonRequest({ firstName: 'John', lastName: 'Doe' })
 ```
 
 ### 3. API service method — `src/rest/<domain>/<domain>.api.ts`
@@ -117,18 +127,33 @@ personApi: async ({ request }, use) => {
 
 ### 5. Test snippet (show only, do not create file)
 
+Request body instances are constructed in `*.data.ts` and referenced by name in the test — never inline `new XxxRequest(...)` inside the test call.
+
 ```ts
-import { test, expect } from '@tests/base-test'
+// persons.data.ts
 import { CreatePersonRequest } from '@rest/persons/persons.utils'
-import { personData } from './persons.data'
+
+export const createPersonRequest = new CreatePersonRequest('John', 'Doe')
+
+// persons.test.ts
+import { test, expect } from '@tests/base-test'
+import { createPersonRequest } from './persons.data'
 
 test.describe('api: persons', () => {
   test('t_01_create_person_returns_201', async ({ personApi }) => {
-    const response = await personApi.createPerson(new CreatePersonRequest(personData.firstName, personData.lastName))
+    const response = await personApi.createPerson(createPersonRequest)
     expect(response.status).toBe(201)
     expect(response.body?.data.id).toBeTruthy()
   })
 })
+```
+
+### 6. Format
+
+After all files are created / edited, run:
+
+```
+pnpm format
 ```
 
 ## Conventions
