@@ -1,7 +1,12 @@
 # new-pw-ts-project
 
+![Playwright](https://img.shields.io/badge/Playwright-1.58-45ba4b?logo=playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-latest-f69220?logo=pnpm&logoColor=white)
+![Node](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)
+
 End-to-end + API test automation for **&lt;SYSTEM_NAME&gt;**.
-Scaffolded from the *Project Blueprint — Playwright + TS Framework* (based on the eVo autotests setup).
+Scaffolded from the _Project Blueprint — Playwright + TS Framework_ (based on the eVo autotests setup).
 
 ## Stack
 
@@ -11,6 +16,11 @@ Scaffolded from the *Project Blueprint — Playwright + TS Framework* (based on 
 - **Prettier** — no semicolons, single quotes, `printWidth: 155`
 - **Zod** for API DTO validation
 - CI: **GitLab CI** (lint + `tsc --noEmit` on MR) + **Jenkins** (Docker agent, run + reports)
+
+## Prerequisites
+
+- **Node.js** ≥ 20 ([download](https://nodejs.org/))
+- **pnpm** — `npm install -g pnpm`
 
 ## Getting started
 
@@ -41,14 +51,14 @@ pnpm run format
 
 ## Playwright projects
 
-| Project | What it runs |
-|---|---|
-| `setup` | `auth-storage-state.setup.ts` — logs in, saves storage state |
-| `e2e` | browser tests (excludes `@sequential`), depends on `setup` |
-| `sequential` | `@sequential` tests, single worker |
-| `api` | REST tests (trace off) |
-| `healthcheck` | `@healthcheck` tagged tests |
-| `externalservers` | prod / external health checks |
+| Project           | What it runs                                                 |
+| ----------------- | ------------------------------------------------------------ |
+| `setup`           | `auth-storage-state.setup.ts` — logs in, saves storage state |
+| `e2e`             | browser tests (excludes `@sequential`), depends on `setup`   |
+| `sequential`      | `@sequential` tests, single worker                           |
+| `api`             | REST tests (trace off)                                       |
+| `healthcheck`     | `@healthcheck` tagged tests                                  |
+| `externalservers` | prod / external health checks                                |
 
 ## Structure
 
@@ -63,6 +73,17 @@ src/
 ├── rest/             # ApiClient + Zod models
 └── utils/            # common helpers
 ```
+
+## Architecture patterns
+
+| Pattern             | Description                                                                                                                                                |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **POM**             | All pages extend `UniversalPage`. Locators exposed via helpers (`byRole` / `byLabel` / `byTestId`).                                                        |
+| **Service layer**   | `src/pages/service/` — reusable business logic shared across page objects.                                                                                 |
+| **Manager pattern** | Aggregate page objects into a manager class for multi-step flows.                                                                                          |
+| **Fixtures (DI)**   | `base-test.ts` merges `ui-fixtures.ts` + `api-fixtures.ts`. Always import `test`/`expect` from `@tests/base-test`, never from `@playwright/test` directly. |
+| **Data-driven**     | Test inputs live in `*.data.ts` next to the spec, not inline.                                                                                              |
+| **REST / Zod**      | `ApiClient.send<T>()` with Zod-validated DTOs. Requests built with `RequestOptionsBuilder`.                                                                |
 
 ## Conventions
 
