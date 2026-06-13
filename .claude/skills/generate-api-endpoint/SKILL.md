@@ -1,3 +1,8 @@
+---
+name: generate-api-endpoint
+description: Generate all boilerplate for a new API endpoint following the project's REST layer conventions — Zod model, request body class, ApiClient service method, fixture registration, and a test example. Use when the user wants to add or scaffold an API endpoint, generate an endpoint from a cURL command, or create a model from Swagger.
+---
+
 # Skill: generate-api-endpoint
 
 ## Purpose
@@ -13,6 +18,255 @@ The skill collects two inputs from the user, then produces four artifacts (model
 - "generate endpoint from curl"
 - "scaffold API method"
 - "create model from swagger"
+
+---
+
+## Step 0 — Verify (or bootstrap) the REST layer
+
+**Run this before collecting any input.** Do not ask the user anything yet.
+
+The endpoint generator assumes the shared REST transport layer already exists. Check for these files **in this exact order** and stop at the first decision:
+
+| File | Role |
+| --- | --- |
+| `src/rest/enum/http-method.ts` | `EHttpMethod` enum |
+| `src/rest/api-response.ts` | `IApiResponse<T>` interface |
+| `src/rest/request-options.ts` | `ApiRequestOptions` + `RequestOptionsBuilder` |
+| `src/rest/api-client.ts` | `ApiClient` base class with `send<T>()` |
+| `src/tests/api/api-fixtures.ts` | `apiTest` fixture with `apiClient` |
+| `src/rest/utils/omit-fields.ts` | recursive field stripper (used by the snapshot helper) |
+| `src/rest/utils/json-validator.ts` | `assertResponseBody` — JSON snapshot assertion with `TEACH_MODE` |
+
+Decision:
+
+- **All five exist** → the REST layer is present. Print one line (`✓ REST layer present`) and proceed to Step 1.
+- **One or more are missing** → bootstrap the missing files first (create only the ones that are absent — never overwrite an existing file), then proceed to Step 1.
+
+> Rationale: without this layer, every generated `*.api.ts` would reference `ApiClient` / `RequestOptionsBuilder` / `EHttpMethod` that don't exist, and the endpoint would not compile.
+
+### Bootstrap templates
+
+Create each **missing** file with exactly this content.
+
+`src/rest/enum/http-method.ts`:
+
+```ts
+export enum EHttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
+}
+```
+
+`src/rest/api-response.ts`:
+
+```ts
+export interface IApiResponse<T> {
+  status: number
+  body: T | null
+}
+```
+
+`src/rest/request-options.ts`:
+
+```ts
+import { ZodSchema } from 'zod'
+import { EHttpMethod } from './enum/http-method'
+
+export interface ApiRequestOptions {
+  method: EHttpMethod
+  url: string
+  request?: unknown
+  responseType?: ZodSchema
+  headers?: Record<string, string>
+  expectedStatusCode?: number
+}
+
+export class RequestOptionsBuilder {
+  private readonly options: Partial<ApiRequestOptions> = {}
+
+  constructor(
+    private readonly method: EHttpMethod,
+    private readonly url: string,
+  ) {
+    this.options.method = method
+    this.options.url = url
+  }
+
+  request(request: unknown): this {
+    this.options.request = request
+    return this
+  }
+
+  responseType(responseType: ZodSchema): this {
+    this.options.responseType = responseType
+    return this
+  }
+
+  headers(headers: Record<string, string>): this {
+    this.options.headers = headers
+    return this
+  }
+
+  expectedStatusCode(status: number): this {
+    this.options.expectedStatusCode = status
+    return this
+  }
+
+  build(): ApiRequestOptions {
+    return {
+      method: this.method,
+      url: this.url,
+      ...this.options,
+    } as ApiRequestOptions
+  }
+}
+```
+
+`src/rest/api-client.ts`:
+
+```ts
+import { APIRequestContext } from '@playwright/test'
+import { IApiResponse } from './api-response'
+import { ApiRequestOptions } from './request-options'
+
+export class ApiClient {
+  constructor(
+    private readonly request: APIRequestContext,
+    private readonly baseUrl = '',
+  ) {}
+
+  async send<T>(options: ApiRequestOptions): Promise<IApiResponse<T>> {
+    const url = `${this.baseUrl}${options.url}`
+
+    const defaultHeaders: Record<string, string> = {
+      'Accept-Language': 'de',
+      'Content-Type': 'application/json',
+    }
+
+    const response = await this.request.fetch(url, {
+      method: options.method,
+      headers: { ...defaultHeaders, ...options.headers },
+      data: options.request ? JSON.stringify(options.request) : undefined,
+    })
+
+    if (options.expectedStatusCode !== undefined && response.status() !== options.expectedStatusCode) {
+      throw new Error(`Expected status ${options.expectedStatusCode} but got ${response.status()} for ${options.method} ${url}`)
+    }
+
+    const contentType = response.headers()['content-type'] ?? ''
+    let body: T | null = null
+
+    if (contentType.includes('application/json')) {
+      const json = await response.json()
+      body = options.responseType ? (options.responseType.parse(json) as T) : (json as T)
+    }
+
+    return { status: response.status(), body }
+  }
+}
+```
+
+`src/tests/api/api-fixtures.ts` (only the base shell — add per-domain API fixtures later per Step 4):
+
+```ts
+import { test as base } from '@playwright/test'
+import { ApiClient } from '@rest/api-client'
+
+export interface ApiFixtures {
+  apiClient: ApiClient
+}
+
+const apiBaseUrl = process.env['API_BASE_URL'] ?? ''
+
+/** API-layer fixtures. */
+export const apiTest = base.extend<ApiFixtures>({
+  apiClient: async ({ request }, use) => {
+    await use(new ApiClient(request, apiBaseUrl))
+  },
+})
+```
+
+`src/rest/utils/omit-fields.ts`:
+
+```ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * Recursively omits specified fields from an object or array.
+ * @param object - The object or array to process
+ * @param fieldsToOmit - Array of field names to omit
+ * @returns New object/array with specified fields removed
+ */
+export function omitFields(object: any, fieldsToOmit: string[]): any {
+  if (Array.isArray(object)) return object.map((item) => omitFields(item, fieldsToOmit))
+
+  if (typeof object !== 'object' || object === null) return object
+
+  const result: any = {}
+  for (const key of Object.keys(object)) {
+    if (fieldsToOmit.includes(key)) continue
+    result[key] = omitFields(object[key], fieldsToOmit)
+  }
+  return result
+}
+```
+
+`src/rest/utils/json-validator.ts` (snapshot assertion helper — depends on `omit-fields.ts`, so create both together):
+
+```ts
+import fs from 'node:fs'
+import path from 'node:path'
+import test, { expect } from '@playwright/test'
+import { omitFields } from './omit-fields'
+
+/**
+ * Asserts that `actualResponse` matches a saved JSON snapshot.
+ *
+ * Expected JSON files live in an `upload-files/` folder next to the spec:
+ *   <spec-dir>/upload-files/<filename>
+ *
+ * TEACH_MODE:
+ *   Set `TEACH_MODE=true` to write the actual response to disk instead of asserting —
+ *   this lets you capture a baseline snapshot on the first run.
+ *   Example: TEACH_MODE=true pnpm test -- <path>
+ *
+ * @param actualResponse - The parsed response body to assert
+ * @param filename       - JSON file name inside the `upload-files/` folder (e.g. `get-activities.json`)
+ * @param ignoreFields   - Optional list of field names to strip before comparison (e.g. dynamic timestamps)
+ */
+export function assertResponseBody(actualResponse: unknown, filename: string, ignoreFields: string[] = []): void {
+  const uploadFilePath = path.join(path.dirname(test.info().file), 'upload-files', filename)
+
+  if (process.env['TEACH_MODE'] === 'true') {
+    fs.mkdirSync(path.dirname(uploadFilePath), { recursive: true })
+    fs.writeFileSync(uploadFilePath, JSON.stringify(actualResponse, null, 2), 'utf8')
+  } else {
+    if (!fs.existsSync(uploadFilePath)) {
+      throw new Error(`Snapshot file not found: ${uploadFilePath}\nRun with TEACH_MODE=true to create it.`)
+    }
+
+    const expected: unknown = JSON.parse(fs.readFileSync(uploadFilePath, 'utf8'))
+
+    if (ignoreFields.length > 0) {
+      const cleanedActual = omitFields(actualResponse, ignoreFields)
+      const cleanedExpected = omitFields(expected, ignoreFields)
+      expect(cleanedActual, `Response does not match snapshot: ${filename}`).toStrictEqual(cleanedExpected)
+    } else {
+      expect(actualResponse, `Response does not match snapshot: ${filename}`).toStrictEqual(expected)
+    }
+  }
+}
+```
+
+> The snapshot helper is **optional** — the four core transport files are enough for an endpoint to compile. Bootstrap `omit-fields.ts` + `json-validator.ts` only when the user wants snapshot-based response assertions (`assertResponseBody`) instead of, or in addition to, inline `expect` checks. When present, you can reference it in the Step 5 test snippet as an alternative assertion style.
+
+After bootstrapping, also confirm that:
+
+- The `@rest/*` path alias resolves to `src/rest/*` (in `tsconfig.json`). If it does not, note this to the user instead of editing `tsconfig.json` silently.
+- `zod` is a dependency. If missing, tell the user to run `pnpm add zod` — do not install it yourself.
 
 ---
 
@@ -146,7 +400,6 @@ import { personData } from './persons.data'
 test.describe('api: persons', () => {
   test('t_01_create_person_returns_201', async ({ personApi }) => {
     const response = await personApi.createPerson(new CreatePersonRequest(personData.firstName, personData.lastName))
-    expect(response.status).toBe(201)
     expect(response.body?.data.id).toBeTruthy()
   })
 })
