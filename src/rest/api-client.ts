@@ -12,7 +12,7 @@ export class ApiClient {
     const url = `${this.baseUrl}${options.url}`
 
     const defaultHeaders: Record<string, string> = {
-      'Accept-Language': 'de',
+      'Accept-Language': 'en',
       'Content-Type': 'application/json',
     }
 
