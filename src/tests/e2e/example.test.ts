@@ -1,4 +1,4 @@
-import { test, expect } from '@tests/base-test'
+import { test, expect, STORAGE_STATE } from '@tests/base-test'
 import { loginCases } from './example.data'
 
 /**
@@ -12,4 +12,13 @@ test.describe('login', () => {
       await expect(page).toHaveURL(data.expectedUrl)
     })
   }
+})
+
+test.describe('testing', () => {
+  // Reuse the authenticated session persisted by the `setup` project.
+  test.use({ storageState: STORAGE_STATE })
+
+  test(`t_01_ddd`, async ({ page }) => {
+    await expect(page).toHaveURL('http')
+  })
 })

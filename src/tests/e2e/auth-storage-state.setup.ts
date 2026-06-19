@@ -1,8 +1,6 @@
 import { test as setup } from '@playwright/test'
 import { LoginPage } from '@pages/login-page'
-import path from 'node:path'
-
-export const STORAGE_STATE = path.join('.auth', 'user.json')
+import { STORAGE_STATE } from '@tests/base-test'
 
 /**
  * `setup` project: authenticate once and persist storage state.
