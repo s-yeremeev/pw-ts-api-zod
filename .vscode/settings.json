@@ -6,7 +6,7 @@
   },
   "eslint.validate": ["typescript", "javascript"],
   "cSpell.language": "en",
-  "cSpell.words": [],
+  "cSpell.words": ["kampagnen", "privatkunde", "Stapelberechnung", "vertragsdetails"],
   "[typescript]": {
     "typescript.preferences.importModuleSpecifier": "non-relative"
   },

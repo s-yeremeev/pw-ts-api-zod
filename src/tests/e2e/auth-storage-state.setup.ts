@@ -1,13 +1,16 @@
 import { test as setup } from '@playwright/test'
 import { LoginPage } from '@pages/login-page'
-import { STORAGE_STATE } from '@tests/base-test'
+import { STORAGE_STATE, credentials, type Role } from '@tests/e2e/ui-fixtures'
 
 /**
- * `setup` project: authenticate once and persist storage state.
+ * `setup` project: authenticate each role once and persist its storage state.
  * e2e/sequential projects depend on it (see playwright.config.ts).
  */
-setup('authenticate', async ({ page }) => {
-  const loginPage = new LoginPage(page)
-  await loginPage.login(process.env.TEST_USER ?? '', process.env.TEST_PASSWORD ?? '')
-  await page.context().storageState({ path: STORAGE_STATE })
-})
+for (const role of Object.keys(credentials) as Role[]) {
+  setup(`authenticate as ${role}`, async ({ page }) => {
+    const loginPage = new LoginPage(page)
+    const { username, password } = credentials[role]
+    await loginPage.login(username, password)
+    await page.context().storageState({ path: STORAGE_STATE[role] })
+  })
+}

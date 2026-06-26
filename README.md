@@ -19,6 +19,7 @@ Scaffolded from the _Project Blueprint — Playwright + TS Framework_ (based on 
 
 ## Prerequisites
 
+- **Git** ([download](https://git-scm.com/download/win))
 - **Node.js** ≥ 20 ([download](https://nodejs.org/))
 - **pnpm** — `npm install -g pnpm`
 
@@ -29,6 +30,34 @@ pnpm install
 pnpm exec playwright install
 cp .env.example .env   # then fill BASE_URL, TEST_USER, TEST_PASSWORD
 ```
+
+### Clone on a new machine
+
+The project lives at **[s-yeremeev/pw-ts-api-zod](https://github.com/s-yeremeev/pw-ts-api-zod)**. To set it up on another PC:
+
+```bash
+git clone https://github.com/s-yeremeev/pw-ts-api-zod.git
+cd pw-ts-api-zod
+pnpm install
+pnpm exec playwright install
+cp .env.example .env   # then fill in real credentials
+```
+
+Verify everything works:
+
+```bash
+pnpm run typecheck
+pnpm run lint
+pnpm test
+```
+
+> **`.env` is not in Git** — only `.env.example` is committed. After cloning, recreate `.env` from the template and fill in the real values manually (they are not stored in the repo). The same applies to `external-credentials.env` and `email-passwords.env`.
+
+**Authentication for a private repo** — GitHub no longer accepts a password over HTTPS. Use one of:
+
+- **GitHub CLI** — `gh auth login` (simplest), or
+- **Personal Access Token** instead of the password ([github.com/settings/tokens](https://github.com/settings/tokens)), or
+- **SSH key** — clone via `git@github.com:s-yeremeev/pw-ts-api-zod.git`.
 
 ## Running tests
 
