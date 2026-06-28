@@ -6,7 +6,7 @@
 ![Node](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)
 
 End-to-end + API test automation for **&lt;SYSTEM_NAME&gt;**.
-Scaffolded from the _Project Blueprint — Playwright + TS Framework_ (based on the eVo autotests setup).
+Scaffolded from the _Project Blueprint — Playwright + TS Framework_ (based on the autotests setup).
 
 ## Stack
 
@@ -79,12 +79,12 @@ pnpm run format
 
 ## Playwright projects
 
-| Project      | What it runs                                                 |
-| ------------ | ------------------------------------------------------------ |
+| Project        | What it runs                                                    |
+| -------------- | --------------------------------------------------------------- |
 | `setup`      | `auth-storage-state.setup.ts` — logs in, saves storage state |
-| `e2e`        | browser tests (excludes `@sequential`), depends on `setup`   |
-| `sequential` | `@sequential` tests, single worker                           |
-| `api`        | REST tests (trace off)                                       |
+| `e2e`        | browser tests (excludes`@sequential`), depends on `setup`   |
+| `sequential` | `@sequential` tests, single worker                            |
+| `api`        | REST tests (trace off)                                          |
 
 ## Structure
 
@@ -101,14 +101,14 @@ src/
 
 ## Architecture patterns
 
-| Pattern             | Description                                                                                                                                                |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **POM**             | All pages extend `UniversalPage`. Locators exposed via helpers (`byRole` / `byLabel` / `byTestId`).                                                        |
-| **Service layer**   | `src/pages/service/` — reusable business logic shared across page objects.                                                                                 |
-| **Manager pattern** | Aggregate page objects into a manager class for multi-step flows.                                                                                          |
+| Pattern                   | Description                                                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **POM**             | All pages extend`UniversalPage`. Locators exposed via helpers (`byRole` / `byLabel` / `byTestId`).                                                               |
+| **Service layer**   | `src/pages/service/` — reusable business logic shared across page objects.                                                                                            |
+| **Manager pattern** | Aggregate page objects into a manager class for multi-step flows.                                                                                                        |
 | **Fixtures (DI)**   | `base-test.ts` merges `ui-fixtures.ts` + `api-fixtures.ts`. Always import `test`/`expect` from `@tests/base-test`, never from `@playwright/test` directly. |
-| **Data-driven**     | Test inputs live in `*.data.ts` next to the spec, not inline.                                                                                              |
-| **REST / Zod**      | `ApiClient.send<T>()` with Zod-validated DTOs. Requests built with `RequestOptionsBuilder`.                                                                |
+| **Data-driven**     | Test inputs live in`*.data.ts` next to the spec, not inline.                                                                                                           |
+| **REST / Zod**      | `ApiClient.send<T>()` with Zod-validated DTOs. Requests built with `RequestOptionsBuilder`.                                                                          |
 
 ## Conventions
 
