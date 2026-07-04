@@ -12,13 +12,16 @@
     "format": "prettier --write \"src/**/*.{ts,js}\"",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "k6:smoke": "k6 run k6/src/smoke.test.ts",
+    "k6:typecheck": "tsc --project k6/tsconfig.json"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9",
     "@eslint/markdown": "^7",
     "@playwright/test": "^1.58",
+    "@types/k6": "^2.0.0",
     "@types/node": "^25",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
@@ -35,7 +38,7 @@
     "@faker-js/faker": "^10",
     "dotenv": "^17",
     "luxon": "^3",
-    "zod": "^4"
+    "zod": "^4.4.3"
   },
   "pnpm": {
     "overrides": {

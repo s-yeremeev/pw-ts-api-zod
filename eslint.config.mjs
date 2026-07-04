@@ -18,13 +18,10 @@ export default defineConfig([
     'docs/',
     'eslint.config.mjs',
     '.claude/skills/**/evals/',
+    'k6/**',
   ]),
   js.configs.recommended,
-  ...compat.extends(
-    'plugin:@typescript-eslint/recommended',
-    'plugin:playwright/playwright-test',
-    'plugin:prettier/recommended',
-  ),
+  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:playwright/playwright-test', 'plugin:prettier/recommended'),
   {
     files: ['**/*.ts'],
     languageOptions: {
@@ -46,10 +43,7 @@ export default defineConfig([
       'playwright/no-focused-test': 'warn',
       'playwright/expect-expect': 'off',
       'playwright/no-networkidle': 'off',
-      'unicorn/prevent-abbreviations': [
-        'error',
-        { allowList: { util: true, utils: true, args: true, params: true, env: true, props: true, ref: true } },
-      ],
+      'unicorn/prevent-abbreviations': ['error', { allowList: { util: true, utils: true, args: true, params: true, env: true, props: true, ref: true } }],
       'unicorn/no-null': 'off',
       'unicorn/filename-case': ['error', { cases: { kebabCase: true } }],
       '@typescript-eslint/no-explicit-any': 'off',
